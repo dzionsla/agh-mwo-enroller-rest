@@ -64,6 +64,7 @@ public class ParticipantRestController {
 	 @RequestMapping(value = "{id}", method = RequestMethod.PUT) // tylko zmiana hasła
 	 public ResponseEntity<?> updateParticipant(@PathVariable("id") String login, @RequestBody Participant incomingParticipant)
 	 {
+		 
 		 Participant participant = participantService.findByLogin(login);
 	     if (participant == null) {
 	    	 return new ResponseEntity(HttpStatus.NOT_FOUND);
