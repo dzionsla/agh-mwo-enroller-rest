@@ -75,4 +75,7 @@ public class ParticipantRestController {
 	     //return new ResponseEntity<Participant>(HttpStatus.NO_CONTENT);
 		 
 	 }
+	 
+	 // pkt 4 i 5, dodanie endpointa  RequestMapping(value = "{meetingid}/participants", method = RequestMethod.PUT)
+	 // dla danego spotkania "meetings/2/participants" i robie POST na to!!
 }
