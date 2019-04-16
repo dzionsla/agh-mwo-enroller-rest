@@ -31,17 +31,55 @@ public class MeetingRestController {
 		return new ResponseEntity<Collection<Meeting>>(meetings, HttpStatus.OK);
 	}
 	
+	@RequestMapping(value = "/{id}", method = RequestMethod.GET)
+	public ResponseEntity<?> getMeeting(@PathVariable("id") long id) {
+		Meeting meeting = meetingService.findByID(id);
+	     if (meeting == null) {
+	         return new ResponseEntity(HttpStatus.NOT_FOUND);
+	     }
+	     return new ResponseEntity<Meeting>(meeting, HttpStatus.OK);
+	 }
+	
+	 @RequestMapping(value = "", method = RequestMethod.POST)
+	 public ResponseEntity<?> registerMeeting(@RequestBody Meeting meeting)
+	 {
+		 Meeting foundMeeting = meetingService.findByID(meeting.getId());
+	     if (meeting == null) {
+	    	 return new ResponseEntity("Unable to create. A meeting with ID " + meeting.getId() + " already exist.", HttpStatus.CONFLICT);
+	     }
+	     meetingService.add(meeting);
+	     return new ResponseEntity<Meeting>(meeting, HttpStatus.CREATED);
+	 }
+	
+	 @RequestMapping(value = "{id}", method = RequestMethod.DELETE)
+	 public ResponseEntity<?> deleteParticipant(@PathVariable("id") long id)
+	 {
+		 Meeting meeting = meetingService.findByID(id);
+	     if (meeting == null) {
+	    	 return new ResponseEntity(HttpStatus.NOT_FOUND);
+	     }
+	     meetingService.delete(meeting);
+	     return new ResponseEntity<Meeting>(meeting, HttpStatus.OK);
+	     //return new ResponseEntity<Participant>(HttpStatus.NO_CONTENT);
+		 
+	 }
+	 
 	@RequestMapping(value = "/{id}/participants", method = RequestMethod.POST) // pkt 4 !!
 	public ResponseEntity<?> addParticipantToMeeting(@PathVariable("id") int id, @RequestBody Participant newParticipant) {
 		// pobrać spotkanie
+		Meeting meeting = meetingService.findByID(id);
+		if (meeting == null) {
+	    	 return new ResponseEntity(HttpStatus.NOT_FOUND);
+	     }
 		// pobrać uczestnika
-		
+		Participant foundParticipant = participantService.findByLogin(newParticipant.getLogin());
+	    if (newParticipant == null) {
+	    	return new ResponseEntity("Unable to create. A participant with login " + newParticipant.getLogin() + " already exist.", HttpStatus.CONFLICT);
+	    }
 		// dodac uczestnika do spotkania
-		
+	    participantService.add(newParticipant);
 		// pracujemy na dwich autowired, meeting i service!
-		
-		
-		return null;
+	    return new ResponseEntity<Participant>(newParticipant, HttpStatus.OK);
 		
 	}
 	
