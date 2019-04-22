@@ -15,7 +15,7 @@ import com.company.enroller.model.Participant;
 import com.company.enroller.persistence.ParticipantService;
 
 @RestController
-@RequestMapping("/participants")  // obsługa uczestnikow, dodawanie, usuwanie itp
+@RequestMapping("/participants") 
 public class ParticipantRestController {
 
 	@Autowired
@@ -62,11 +62,9 @@ public class ParticipantRestController {
 	     }
 	     participantService.delete(participant);
 	     return new ResponseEntity<Participant>(participant, HttpStatus.OK);
-	     //return new ResponseEntity<Participant>(HttpStatus.NO_CONTENT);
-		 
 	 }
 
-	 @RequestMapping(value = "{id}", method = RequestMethod.PUT) // tylko zmiana hasła
+	 @RequestMapping(value = "{id}", method = RequestMethod.PUT)
 	 public ResponseEntity<?> updateParticipant(@PathVariable("id") String login, @RequestBody Participant incomingParticipant)
 	 {
 		 
@@ -78,10 +76,6 @@ public class ParticipantRestController {
 	     participant.setPassword(incomingParticipant.getPassword());
 	     participantService.update(participant);
 	     return new ResponseEntity<Participant>(participant, HttpStatus.OK);
-	     //return new ResponseEntity<Participant>(HttpStatus.NO_CONTENT);
-		 
 	 }
 	 
-	 // pkt 4 i 5, dodanie endpointa  RequestMapping(value = "{meetingid}/participants", method = RequestMethod.PUT)
-	 // dla danego spotkania "meetings/2/participants" i robie POST na to!!
 }

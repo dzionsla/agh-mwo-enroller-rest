@@ -18,7 +18,7 @@ import com.company.enroller.persistence.MeetingService;
 import com.company.enroller.persistence.ParticipantService;
 
 @RestController
-@RequestMapping("/meetings")  // obsługa uczestnikow, dodawanie, usuwanie itp
+@RequestMapping("/meetings")
 public class MeetingRestController {
 
 	@Autowired
@@ -67,65 +67,41 @@ public class MeetingRestController {
 	     return new ResponseEntity<Meeting>(meeting, HttpStatus.OK);
 	}
 
-	@RequestMapping(value = "/{id}/meetings/{participantId}", method = RequestMethod.PUT)
-	public ResponseEntity<?> addParticipantToMeeting(@PathVariable("id") Long id, @PathVariable("participantId") String login) {
+	@RequestMapping(value = "/{id}/participants", method = RequestMethod.POST)
+	public ResponseEntity<?> addParticipantToMeeting(@PathVariable("id") Long id, @RequestBody Participant participant) {
 		Meeting meeting = meetingService.findByID(id);
-		Participant participant = participantService.findByLogin(login);
-		if (meeting == null || participant == null) {
+		if (meeting == null) {
 			return new ResponseEntity("Unable to update. A meeting with id " + id + " does not exist.", HttpStatus.NOT_FOUND);
 		} 
-		meetingService.addParticipantToTheMeeting(id, participant);	
+		Participant foundParticipant = participantService.findByLogin(participant.getLogin());
+		if (foundParticipant == null) {
+			return new ResponseEntity("Unable to update. A participant with login " + participant.getLogin() + " does not exist.", HttpStatus.NOT_FOUND);
+		} 
+		meetingService.addParticipantToTheMeeting(id, foundParticipant);	
 		return new ResponseEntity<Meeting>(meeting, HttpStatus.OK);
-	}	 
-	 
-//	@RequestMapping(value = "/{id}", method = RequestMethod.POST)
-//	public ResponseEntity<?> addParticipantToMeeting(@PathVariable("id") long id, @RequestBody Participant newParticipant) {
-//		Meeting meeting = meetingService.findByID(id);
-//		if (meeting == null) 
-//		{
-//	    	 return new ResponseEntity(HttpStatus.NOT_FOUND);
-//	    }
-//		Participant foundParticipant = participantService.findByLogin(newParticipant.getLogin());
-//	    if (foundParticipant == null) 
-//	    {
-//	    	return new ResponseEntity("Unable to create. A participant with login " + newParticipant.getLogin() + " already exist.", HttpStatus.CONFLICT);
-//	    }
-//	    System.out.println(meeting.getId());
-//	    System.out.println(newParticipant.getLogin());
-//	    meetingService.addParticipantToTheMeeting(meeting.getId(), newParticipant);
-//	    return new ResponseEntity<Meeting>(meeting, HttpStatus.OK);
-//	}
+	}
 	
-//	@RequestMapping(value = "/{id}/participants", method = RequestMethod.GET) // pkt 4 !!
-//	public ResponseEntity<?> getParticipantsFromMeeting(@PathVariable("id") int id) {
-//		// pobrać spotkanie
-//		Meeting meeting = meetingService.findByID(id);
-//		if (meeting == null) {
-//	    	 return new ResponseEntity(HttpStatus.NOT_FOUND);
-//	    }
-//
-//		//Collection<Participant> participants = meeting.getParticipants();
-//		System.out.println(meeting.getId());
-//	    //return new ResponseEntity<Collection<Participant>>(participants, HttpStatus.OK);
-//		return new ResponseEntity<Meeting>(meeting, HttpStatus.OK);
-//	}
-	// pkt 5 - pobieramy spotkanie, getParticipants i the end
+	@RequestMapping(value = "/{id}/participants", method = RequestMethod.DELETE)
+	public ResponseEntity<?> removeParticipant(@PathVariable("id") Long id, @RequestBody Participant participant) {
+		Meeting meeting = meetingService.findByID(id);
+		Participant foundParticipant = participantService.findByLogin(participant.getLogin());
+		if (meeting == null || participant == null) {
+			return new ResponseEntity("Unable to delete", HttpStatus.NOT_FOUND);
+		} 
+		meetingService.removeParticipant(id, foundParticipant);	
+		return new ResponseEntity<Meeting>(meeting, HttpStatus.OK);
+	}
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+	@RequestMapping(value = "/{id}/participants", method = RequestMethod.GET)
+	public ResponseEntity<?> getParticipantFromMeeting(@PathVariable("id") Long id) {
+		Meeting meeting = meetingService.findByID(id);
+		Collection<Participant> participantList = meeting.getParticipants();
+		Collection<String> userNames = new HashSet<>();
+		for (Participant part:participantList) {
+			userNames.add(part.getLogin());
+		}
+		return new ResponseEntity<Collection<Participant>>(participantList, HttpStatus.OK);
+	}	
 	
 	
 	

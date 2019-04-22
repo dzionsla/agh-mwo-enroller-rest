@@ -35,6 +35,7 @@ public class Meeting {
 	private String date;
 
 	@JsonIgnore // relacja wiele do wiele, POJO - plain old java obcject
+	//@ManyToMany(cascade = { CascadeType.ALL })
 	@ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
 	@JoinTable(name = "meeting_participant", joinColumns = { @JoinColumn(name = "meeting_id") }, inverseJoinColumns = {
 			@JoinColumn(name = "participant_login") })
